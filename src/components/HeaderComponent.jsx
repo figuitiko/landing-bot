@@ -18,6 +18,9 @@ const HeaderComponent = () => {
               <a href="#main">inicio</a>
             </li>
             <li>
+              <a href="#calculator">Calculadora Menstrual</a>
+            </li>
+            <li>
               <a href="#sub-main">Saber más</a>
             </li>
           </ul>        

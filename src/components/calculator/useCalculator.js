@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 
 
 const useCalculator = () => {
   
   const [allValues, setAllValues] = useState([]);  
+  const [selectedCycle, setSelectedCycle] = useState(21);
+  const [selectedLasting, setSelectedLasting] = useState(1);
+  const[isShow, setIsShow] = useState(false);
 
   const addDaysToDate = (date, days) => {
     const result = new Date(date);
@@ -18,7 +21,7 @@ const useCalculator = () => {
       const periodStartDate =  new Date(date);
       const periodEndDate = addDaysToDate(periodStartDate, periodLength-1);
   
-      const prePeriodStartDate = addDaysToDate(periodEndDate, -4);
+      const prePeriodStartDate = addDaysToDate(periodStartDate, -2);
       const prePeriodEndDate = addDaysToDate(prePeriodStartDate, 1);
   
       const postPeriodStartDate = addDaysToDate(periodEndDate, 1);
@@ -60,7 +63,13 @@ const useCalculator = () => {
 
   return {addDaysToDate, 
           calculateMenstrualCycle, 
-          allValues,          
+          allValues,   
+          selectedCycle,
+          setSelectedCycle,     
+          selectedLasting,
+          setSelectedLasting,  
+          isShow,
+          setIsShow,
         };
 }
 

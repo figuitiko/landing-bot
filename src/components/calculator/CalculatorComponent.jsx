@@ -1,23 +1,21 @@
 import React, { useState } from 'react'
-import { CalculatorWrapper, CalendarWrapper, DatePickerWrapper, InputsWrapper, SelectStyled, SingleInputWrapper } from './styles/Calculator.style'
+import { ButtonRetake, CalculatorWrapper, CalendarWrapper, DatePickerWrapper, InputsWrapper,  LegendIcon,  LegendItem,  LegendText,  LegendWrapper,  SingleInputWrapper } from './styles/Calculator.style'
 import { Calendar ,DateRangePicker  } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import useCalculator from './useCalculator';
-import Select from 'react-select';
 
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { cycleLengthArray, periodLengthArray } from './config';
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-]
 
 const CalculatorComponent = () => {
   const [value, setValue] = useState(new Date());
-  const [selectedOption, setSelectedOption] = useState(null);
+  
 
-  const {allValues, calculateMenstrualCycle} = useCalculator();
+  const {allValues, calculateMenstrualCycle, selectedCycle, setSelectedCycle, selectedLasting, setSelectedLasting, isShow, setIsShow} = useCalculator();
 
   
    
@@ -25,43 +23,81 @@ const CalculatorComponent = () => {
   //pass multiples dates ranges to the calendar
   const handleSelect = (val) => {
     
-    
-    calculateMenstrualCycle(val.toDateString(), 21, 3);
-    
-    setValue(val)
+    if(selectedLasting && selectedCycle){
+      calculateMenstrualCycle(val.toDateString(), selectedCycle, selectedLasting);    
+    }
+    setValue(val);
+    setIsShow(true);
   }
  
   const handleSelectDate = (ranges) => {
-    console.log(ranges)
-    
+    console.log(ranges)    
   } 
   
   
   return (
-    <CalculatorWrapper>
+    <CalculatorWrapper id='calculator'>
+      <h2>Calculadora Menstrual</h2>
+      <p>La menstruación normalmente llega una vez al mes (cada 28-30 días), pero para muchas mujeres no es una ciencia exacta, 
+        predecir la fecha precisa y duración de su siguiente periodo puede no ser tan sencillo. 
+        Es aquí en donde entran las calculadoras de periodo a ayudarnos.</p>
       <CalendarWrapper>
         <InputsWrapper>
-          <SingleInputWrapper>
-            {
-              options && options.length &&
-              <Select>
-                value={selectedOption}
-                options={options}
-                onChange={setSelectedOption}
-              </Select>
-            }
+        {
+          !isShow &&         
+        <>        
+          <SingleInputWrapper >
+          <InputLabel id="demo-simple-select-label">¿Cuánto dura tu ciclo?</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedCycle}
+              label="Age"
+              onChange={(e)=> setSelectedCycle(e.target.value)}
+              
+            >
+              {
+                cycleLengthArray.map((item, index) => (
+                  <MenuItem key={index} value={item}>{item}</MenuItem>
+                ))
+              }            
+            </Select>
           </SingleInputWrapper>
+          <SingleInputWrapper>
+          <InputLabel id="demo-simple-select-label">¿Cuánto suele durar tu periodo?</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedLasting}
+              label="Age"
+              onChange={(e)=> setSelectedLasting(e.target.value)}
+              
+            >
+              {
+                periodLengthArray.map((item, index) =>  (
+                  <MenuItem key={index} value={item}>{item}</MenuItem>
+                ))
+
+              }
+              
+            </Select>
+          </SingleInputWrapper>
+          </>
+        }   
         </InputsWrapper>
-        <Calendar
-          date={value}
-          onChange={handleSelect}
-        />
+        {
+          !isShow &&
+          <Calendar
+            date={value}
+            onChange={handleSelect}
+          />
+        }
         {
         (
-          allValues && allValues.length
-        ) ?
+         isShow && allValues && allValues.length
+        ) &&
+        <>
           <DateRangePicker ranges={allValues}
-
             showDateDisplay={false}
             dragSelectionEnabled={false}
             showMonthAndYearPickers={false}
@@ -69,10 +105,32 @@ const CalculatorComponent = () => {
             showPreview={false}
             onChange={handleSelectDate}
             
-          /> :
-          <h3>no values</h3>}
+          /> 
+          <LegendWrapper>
+            <LegendItem>              
+              <LegendIcon color='pre'></LegendIcon>
+              <LegendText>pre-periodo</LegendText>
+            </LegendItem>
+            <LegendItem>              
+              <LegendIcon color='period'></LegendIcon>
+              <LegendText>periodo</LegendText>
+            </LegendItem>
+            <LegendItem>
+              <LegendIcon color='post'></LegendIcon>
+              <LegendText>post periodo</LegendText>
+            </LegendItem>
+            <LegendItem>              
+              <LegendIcon color='pico'></LegendIcon>
+              <LegendText>pico de la ovulación</LegendText>
+            </LegendItem>
+          </LegendWrapper>
+          
+          <ButtonRetake onClick={()=>setIsShow(false)}>
+            Volver a calcular
+            </ButtonRetake>        
+        </>
+          }
       </CalendarWrapper>
-      
       <DatePickerWrapper>
       </DatePickerWrapper>
     </CalculatorWrapper>
